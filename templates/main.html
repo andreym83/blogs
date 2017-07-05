@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Блоги - главная страница{% endblock %}
+
+{% block content %}
+Добро пожаловать, {{ user.username }}.<br /><br />
+
+<a href="/news/">Моя лента новостей</a><br /><br />
+
+<a href="/authors/">Список авторов, подписки</a><br /><br />
+
+<a href="/blog/{{ user.username }}/">Мои записи в блоге</a><br /><br />
+
+<a href="/add_post/">Добавить запись</a><br /><br />
+
+<a href="/accounts/logout/">Выйти</a>
+{% endblock %}

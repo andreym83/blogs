@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить новый пост в блог{% endblock %}
+
+{% block content %}
+Добро пожаловать, {{ user.username }}.<br /><br />
+
+<h1>Добавить новый пост в блог</h1>
+
+{% if form.errors %}
+    <p style="color: red;">
+        Исправьте следующие ошибки{{ form.errors|pluralize }}.
+    </p>
+{% endif %}
+
+<form action="" method="post">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="Отправить">
+</form>
+
+{% endblock %}

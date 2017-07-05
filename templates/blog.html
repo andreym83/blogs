@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Авторы блогов, на которые я подписан{% endblock %}
+
+{% block head %}
+<script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+Добро пожаловать, {{ user.username }}.<br /><br />
+{% if join %}
+  <h1>Лента новостей</h1>
+{% else %}
+  <h1>Блог пользователя {{ username }}</h1>
+{% endif %}
+
+    {% for post in posts %}
+        <h2>{{ post.header }}</h2>
+        {% if join %}
+          Автор: {{ post.username }}<br />
+        {% endif %}
+        {{ post.text }}<br />
+        ({{ post.time }})
+        {% if join %}
+            <br />
+            {% if post.readed %}
+              Прочитано
+            {% else %}
+              <span id="post{{ post.id }}">Не прочитано. <a href="javascript:markread({{ post.id }});">Пометить прочитанным</a></span>
+            {% endif %}
+        {% endif %}
+        <hr />
+    {% endfor %}
+
+<form name="markread">
+  {% csrf_token %}
+  <input type="hidden" name="post">
+</form>
+
+
+<div class="pagination">
+
+    <div class="current">
+        Страница {{ posts.number }} из {{ posts.paginator.num_pages }}.
+    </div>
+
+    {% if posts.has_previous %}
+        <a href="?page={{ posts.previous_page_number }}">←</a>
+    {% endif %}
+
+    {% if posts.paginator.num_pages > 1 %}
+    {% for num in posts.paginator.page_range %}
+        {% if num == posts.number %}
+            <span class="current"><b>{{ num }}</b></span>
+        {% else %}
+            <a href="?page={{ num }}"> {{ num }}</a>
+        {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    {% if posts.has_next %}
+        <a href="?page={{ posts.next_page_number }}">→</a>
+    {% endif %}
+
+</div>
+
+
+<script type="text/javascript">
+
+function markread(post) {
+
+    $('form[name=markread] input[name=post]').val(post);
+
+    $.ajax({
+        url : "/markread/",
+        type : "POST",
+        data : $('form[name=markread]').serialize(),
+
+        success : function(json) {
+            $('#post' + post).html('Прочитано');
+        },
+        error : function() {
+          alert('Произошла ошибка при выполении запроса');
+        }
+    });
+}
+
+</script>
+
+{% endblock %}

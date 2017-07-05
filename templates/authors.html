@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Авторы блогов, на которые я подписан{% endblock %}
+
+{% block head %}
+<script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    Добро пожаловать, {{ user.username }}.<br /><br />
+
+    <h1>Авторы блогов, на которые я подписан</h1>
+
+    <ul>
+        {% for user in users %}
+        <li><a href="/blog/{{ user.username }}/">{{ user.username }}</a> <span id="author{{ user.id }}"><a href="javascript:subscribe({{ user.id }}, '0');">(отписаться)</a></span></li>
+        {% endfor %}
+    </ul>
+
+    <h1>Авторы блогов, на которые я не подписан</h1>
+
+    <ul>
+        {% for user in users_not_subscribe %}
+        <li><a href="/blog/{{ user.username }}/">{{ user.username }}</a> <span id="author{{ user.id }}"><a href="javascript:subscribe({{ user.id }}, '1');">(подписаться)</a></span></li>
+        {% endfor %}
+    </ul>
+
+    <form name="subscribe">
+        {% csrf_token %}
+        <input type="hidden" name="author">
+        <input type="hidden" name="is_subscribe">
+    </form>
+
+<script type="text/javascript">
+
+function subscribe(author, is_subscribe) {
+
+    $('form[name=subscribe] input[name=author]').val(author);
+    $('form[name=subscribe] input[name=is_subscribe]').val(is_subscribe);
+
+    $.ajax({
+        url : "/subscribe/",
+        type : "POST",
+        data : $('form[name=subscribe]').serialize(),
+
+        success : function(json) {
+            $('#author' + author).html(is_subscribe == '1' ? 'подписано' : 'отписано');
+        },
+        error : function() {
+          alert('Произошла ошибка при выполении запроса');
+        }
+    });
+}
+
+</script>
+
+{% endblock %}
